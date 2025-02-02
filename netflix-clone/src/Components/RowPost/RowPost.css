@@ -15,7 +15,7 @@
 }
 
 .poster {
-    max-height: 250px;
+    max-height: 200px;
     margin-right: 10px;
 }
 
@@ -23,4 +23,9 @@
     transform: scale(1.08);
     box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.4), -6px -6px 20px rgba(255, 255, 255, 0.15);
     opacity: 1;
+}
+
+.smallPoster {
+    max-height: 125px;
+    margin-right: 10px;
 }
