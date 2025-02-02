@@ -5,6 +5,24 @@ function App() {
   const [toDos, setToDos] = useState([])
   const [toDo, setToDo] = useState('')
   const [completed, setCompleted] = useState([])
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState('');
+
+
+  const handleDoubleClick = (id, currentText) => {
+    setEditingId(id);
+    setEditingText(currentText);
+  };
+
+  const handleSaveEdit = (id) => {
+    setToDos((prevToDos) =>
+      prevToDos.map((item) =>
+        item.id === id ? { ...item, text: editingText } : item
+      )
+    );
+    setEditingId(null);
+  };
+
 
   const deleteItem = (id) => {
     const list = toDos.filter(item => item.id !== id);
@@ -33,7 +51,17 @@ function App() {
       </div>
 
       <div className="input">
-        <input value={toDo} onChange={(e) => setToDo(e.target.value)} type="text" placeholder='🖊️ Add item...' />
+        <input value={toDo} onChange={(e) => setToDo(e.target.value)} type="text" placeholder='🖊️ Add item...'
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              if (toDo.trim().length === 0) {
+                return alert("Task cannot be empty!");
+              }
+              setToDos([...toDos, { id: Date.now(), text: toDo, status: false }]);
+              setToDo('');
+            }
+          }}
+        />
         <i onClick={() => {
           if (toDo.length <= 0) {
             return alert("Task cannot be empty!");
@@ -41,9 +69,9 @@ function App() {
           setToDos([...toDos, { id: Date.now(), text: toDo, status: false }])
           setToDo('')
         }
-        } className='fas fa-plus'></i>
+        } className='fas fa-plus' style={{ color: "Highlight" }}></i>
       </div>
-        {toDos.length === 0 && <h2 className='subHeading' style={{marginTop: "2rem", textAlign: "center"}}>You're great! No pending tasks 😍</h2>}
+      {toDos.length === 0 && <h2 className='subHeading' style={{ marginTop: "2rem", textAlign: "center" }}>You're great! No pending tasks 😍</h2>}
       <div className="todos">
         {
           toDos.map((value) => {
@@ -52,7 +80,7 @@ function App() {
                 <div className="left">
                   <input onChange={(e) => {
                     const updatedItem = { ...value, status: e.target.checked };
-                  
+
                     setToDos(toDos.filter(item => item.id !== value.id));
 
                     if (e.target.checked) {
@@ -62,12 +90,27 @@ function App() {
                     }
 
                   }} checked={value.status} type="checkbox" />
-                  <p>
-                    {value.text}
-                  </p>
+
+                  {
+                    editingId === value.id ? (
+                      <input
+                        className='editor'
+                        type="text"
+                        value={editingText}
+                        onChange={(e) => setEditingText(e.target.value)}
+                        onBlur={() => handleSaveEdit(value.id)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(value.id)}
+                        autoFocus
+                      />
+                    ) : (
+                      <p onDoubleClick={() => handleDoubleClick(value.id, value.text)}>
+                        {value.text}
+                      </p>
+                    )}
+
                 </div>
                 <div className="right">
-                  <i onClick={() => deleteItem(value.id)} className='fas fa-times'></i>
+                  <i onClick={() => deleteItem(value.id)} className='fas fa-times' style={{ color: "tomato" }}></i>
                 </div>
               </div>
             )
@@ -75,18 +118,18 @@ function App() {
         }
       </div>
       <div className="completed-tasks">
-        {completed.length > 0 && <h2 >Completed Tasks</h2> }
+        {completed.length > 0 && <h2 >Completed Tasks</h2>}
         <div className='todos'>
           {
             completed.map((value) => {
               if (value.status) {
                 return (
-                  <div className="todo">
+                  <div className="todo" style={{ backgroundColor: "forestgreen" }}>
                     <div className="left">
-                      <p> {value.text} </p>
+                      <p style={{ color: "white" }}> {value.text} </p>
                     </div>
                     <div className="right">
-                      <i onClick={() => deleteCompltedItem(value.id)} className='fas fa-times'></i>
+                      <i onClick={() => deleteCompltedItem(value.id)} className='fas fa-times' style={{ color: "black" }}></i>
                     </div>
                   </div>
                 )
